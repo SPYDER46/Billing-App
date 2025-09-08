@@ -1,0 +1,193 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Header */
+header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+header h1 {
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+/* Card Box */
+.card {
+  background: #fff;
+  padding: 20px;
+  margin: 25px auto;
+  border-radius: 12px;
+  max-width: 800px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+  color: #444;
+}
+
+/* Inputs */
+input[type="text"], 
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Product Row */
+.itemRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.itemRow input {
+  margin: 0;
+}
+
+.itemTotal {
+  font-weight: bold;
+  text-align: right;
+  color: #007bff;
+}
+
+/* Buttons */
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+#addItemBtn {
+  background: #17a2b8;
+  color: white;
+}
+#addItemBtn:hover {
+  background: #138496;
+}
+
+#saveBillBtn {
+  background: #28a745;
+  color: white;
+}
+#saveBillBtn:hover {
+  background: #218838;
+}
+
+#printBillBtn {
+  background: #ffc107;
+  color: #333;
+}
+#printBillBtn:hover {
+  background: #e0a800;
+}
+
+.removeBtn {
+  background: #dc3545;
+  color: white;
+  padding: 6px 12px;
+}
+.removeBtn:hover {
+  background: #b52a37;
+}
+
+.deleteBtn {
+  background: #dc3545;
+  color: white;
+  margin-left: 8px;
+}
+.deleteBtn:hover {
+  background: #b52a37;
+}
+
+.markPaidBtn {
+  background: #007bff;
+  color: white;
+  margin-left: 8px;
+}
+.markPaidBtn:hover {
+  background: #0056b3;
+}
+
+/* Totals */
+.total {
+  font-size: 18px;
+  margin-top: 15px;
+  text-align: right;
+  font-weight: bold;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.itemRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.itemRow input {
+  padding: 5px;
+}
+
+.savedBill {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+}
+
+.savedBill:hover {
+  background: #f1f1f1;
+}
+
+.revenueBox {
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 15px;
+}
+
+.revenueBox h3 {
+  margin: 8px 0;
+  color: #155724;
+}
