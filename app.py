@@ -100,6 +100,32 @@ def mark_paid(bill_id):
     conn.close()
     return jsonify({"status": "success"})
 
+@app.route("/updatePaid/<int:bill_id>", methods=["PUT"])
+def update_paid(bill_id):
+    data = request.json
+    paid_now = float(data.get("paid", 0))
+
+    conn = sqlite3.connect("bills.db")
+    c = conn.cursor()
+    # Get current paid and pending amounts
+    c.execute("SELECT paidAmount, pendingAmount FROM bills WHERE id=?", (bill_id,))
+    row = c.fetchone()
+    if not row:
+        conn.close()
+        return jsonify({"status": "error", "message": "Bill not found"}), 404
+
+    current_paid, current_pending = row
+    new_paid = current_paid + paid_now
+    new_pending = current_pending - paid_now
+    if new_pending < 0:
+        new_pending = 0
+
+    c.execute("UPDATE bills SET paidAmount=?, pendingAmount=? WHERE id=?", (new_paid, new_pending, bill_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "success", "paidAmount": new_paid, "pendingAmount": new_pending})
+
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)

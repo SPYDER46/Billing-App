@@ -191,3 +191,41 @@ button {
   margin: 8px 0;
   color: #155724;
 }
+
+#savedBills table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* ensures columns have fixed width */
+  }
+
+  #savedBills th, #savedBills td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    word-wrap: break-word; /* wrap long text */
+  }
+
+  #savedBills th {
+    background-color: #f0f0f0;
+  }
+
+  #savedBills .actions button {
+    margin: 2px;
+    min-width: 80px;
+  }
+
+  /* Optional: color coding Paid/Pending */
+  #savedBills td.paid {
+    color: green;
+    font-weight: bold;
+  }
+  #savedBills td.pending {
+    color: red;
+    font-weight: bold;
+  }
+
+  /* Summary styling */
+  #savedBills .summary {
+    margin-top: 10px;
+    font-size: 1.1em;
+  }

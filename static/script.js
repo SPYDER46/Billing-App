@@ -99,34 +99,55 @@ async function loadBills() {
   let totalRevenue = 0;
   let totalPending = 0;
 
+  // Table header
+  const table = document.createElement("table");
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+  table.innerHTML = `
+    <tr style="background:#f0f0f0;">
+      <th style="border:1px solid #ccc; padding:5px;">ID</th>
+      <th style="border:1px solid #ccc; padding:5px;">Customer</th>
+      <th style="border:1px solid #ccc; padding:5px;">Date</th>
+      <th style="border:1px solid #ccc; padding:5px;">Total</th>
+      <th style="border:1px solid #ccc; padding:5px;">Paid</th>
+      <th style="border:1px solid #ccc; padding:5px;">Pending</th>
+      <th style="border:1px solid #ccc; padding:5px;">Actions</th>
+    </tr>
+  `;
+
   bills.forEach(bill => {
-    const div = document.createElement("div");
-    div.className = "savedBill";
-    div.innerHTML = `
-      #${bill.id} | ${bill.customer} | ${bill.date} 
-      | Total: ₹${bill.grandTotal} | Paid: ₹${bill.paidAmount} | Pending: ₹${bill.pendingAmount}
-      <button class="deleteBtn" data-id="${bill.id}">🗑️ Delete</button>
-      ${bill.pendingAmount > 0 ? `<button class="markPaidBtn" data-id="${bill.id}">✅ Mark as Paid</button>` : ""}
-      <button class="printSavedBtn" data-id="${bill.id}">🖨️ Print</button>
-    `;
-    savedBillsDiv.appendChild(div);
+    const row = document.createElement("tr");
+    row.innerHTML = `
+  <td>#${bill.id}</td>
+  <td>${bill.customer}</td>
+  <td>${bill.date}</td>
+  <td>₹${bill.grandTotal}</td>
+  <td class="paid">₹${bill.paidAmount}</td>
+  <td class="pending">₹${bill.pendingAmount}</td>
+  <td class="actions">
+    <button class="deleteBtn" data-id="${bill.id}">🗑️ Delete</button>
+    ${bill.pendingAmount > 0 ? `<button class="markPaidBtn" data-id="${bill.id}">✅ Mark as Paid</button>` : ""}
+    <button class="printSavedBtn" data-id="${bill.id}">🖨️ Print</button>
+  </td>
+`;
+    table.appendChild(row);
 
     totalRevenue += parseFloat(bill.paidAmount) || 0;
     totalPending += parseFloat(bill.pendingAmount) || 0;
   });
 
-  // Revenue summary
-  if (bills.length > 0) {
-    const revenueDiv = document.createElement("div");
-    revenueDiv.className = "revenueBox";
-    revenueDiv.innerHTML = `
-      <h3>Total Revenue: ₹${totalRevenue.toFixed(2)}</h3>
-      <h3>Pending Amount: ₹${totalPending.toFixed(2)}</h3>
-    `;
-    savedBillsDiv.appendChild(revenueDiv);
-  }
+  savedBillsDiv.appendChild(table);
 
-  // Delete buttons
+  // Add summary
+  const summaryDiv = document.createElement("div");
+  summaryDiv.style.marginTop = "10px";
+  summaryDiv.innerHTML = `
+    <h3>Total Revenue: ₹${totalRevenue.toFixed(2)}</h3>
+    <h3>Pending Revenue: ₹${totalPending.toFixed(2)}</h3>
+  `;
+  savedBillsDiv.appendChild(summaryDiv);
+
+  // Attach delete events
   document.querySelectorAll(".deleteBtn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
@@ -137,22 +158,35 @@ async function loadBills() {
     });
   });
 
-  // Mark Paid buttons
+  // Attach Mark Paid events
   document.querySelectorAll(".markPaidBtn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
-      if (confirm("Mark this bill as fully paid?")) {
-        await fetch(`/markPaid/${id}`, { method: "PUT" });
+      const amountStr = prompt("Enter amount to mark as paid:");
+      if (!amountStr) return;
+      const amount = parseFloat(amountStr);
+      if (isNaN(amount) || amount <= 0) {
+        alert("Invalid amount!");
+        return;
+      }
+      const res = await fetch(`/updatePaid/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paid: amount })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
         loadBills();
+      } else {
+        alert("Failed to update payment.");
       }
     });
   });
 
-  // Print buttons for saved bills
+  // Attach Print events
   document.querySelectorAll(".printSavedBtn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
-
       const res = await fetch(`/bill/${id}`);
       const bill = await res.json();
 
@@ -168,17 +202,9 @@ async function loadBills() {
               <th>Rate</th>
             </tr>
       `;
-
       bill.items.forEach(it => {
-        html += `
-          <tr>
-            <td>${it.name}</td>
-            <td>${it.qty}</td>
-            <td>₹${it.rate.toFixed(2)}</td>
-          </tr>
-        `;
+        html += `<tr><td>${it.name}</td><td>${it.qty}</td><td>₹${it.rate.toFixed(2)}</td></tr>`;
       });
-
       html += `
           </table>
           <h3 style="text-align:right;">Total: ₹${bill.grandTotal}</h3>
@@ -186,16 +212,18 @@ async function loadBills() {
           <h3 style="text-align:right;">Pending: ₹${bill.pendingAmount}</h3>
         </div>
       `;
+      printSection.innerHTML = html;
 
       const win = window.open("", "PrintBill", "width=400,height=600");
       win.document.write("<html><head><title>Bill</title></head><body>");
-      win.document.write(html);
+      win.document.write(printSection.innerHTML);
       win.document.write("</body></html>");
       win.document.close();
       win.print();
     });
   });
 }
+
 
   function printBill() {
     const customer = customerName.value;
